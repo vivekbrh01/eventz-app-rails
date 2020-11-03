@@ -8,6 +8,8 @@ class Event < ApplicationRecord
   has_many :categorizations, dependent: :destroy
   has_many :categories, through: :categorizations
 
+  has_one_attached :main_image 
+
   validates :name, presence: true, uniqueness: true
   validates :location, presence: true
 
@@ -17,10 +19,7 @@ class Event < ApplicationRecord
 
   validates :capacity, numericality: { only_integer: true, greater_than: 0}
 
-  validates :image_file_name, format: {
-    with: /\w+\.(jpg|png)\z/i,
-    message: "Must be a jpeg or png image"
-  }
+  validate :acceptable_image
 
   scope :past, lambda { where("starts_at < ?", Time.now).order("starts_at") }
 
@@ -41,6 +40,20 @@ class Event < ApplicationRecord
   end
 
   private
+
+  def acceptable_image
+    return unless main_image.attached?
+
+    unless main_image.blob.byte_size <= 1.megabyte
+      errors.add(:main_image, "is too big")
+    end
+
+    acceptable_types = ["image/jpeg", "image/png"]
+
+    unless acceptable_types.include?(main_image.content_type)
+      errors.add(:main_image, "must be a JPEG or a PNG")
+    end
+  end
 
   def set_slug
     self.slug = name.parameterize
