@@ -38,7 +38,9 @@ Event.create!([
     starts_at: 65.days.from_now,
     description: %{
       Kata Camp is where developers go to practice their craft without interruptions. Skip the status reports and stand-up meetings of a typical project. Just get 'er done! Price includes a buffet lunch and a leather-bound journal to record your kata achievements.
-    }.squish
+    }.squish,
+    image_file_name: 'katacamp.png',
+    capacity: 50
   },
   {
     name: "Coffee 'n Code",
